@@ -1,4 +1,4 @@
-module demo
+module wildcert
 
 go 1.22.8
 
