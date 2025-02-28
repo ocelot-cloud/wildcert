@@ -20,4 +20,4 @@ The Email address is used for Let's Encrypt notifications. A certificate for the
 
 ### License
 
-This project is licensed under the 0BSD Open Source License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the 0BSD Open Source License - see the [LICENSE](LICENSE) file for details.
