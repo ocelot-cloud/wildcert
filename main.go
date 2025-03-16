@@ -20,10 +20,10 @@ func main() {
 	if host == "" || email == "" {
 		log.Fatal("Missing HOST or EMAIL environment variables")
 	}
-	_, _ = createCertificateViaLetsEncryptDns01Challenge(host, email)
+	createCertificateViaLetsEncryptDns01Challenge(host, email)
 }
 
-func createCertificateViaLetsEncryptDns01Challenge(host, email string) ([]byte, []byte) {
+func createCertificateViaLetsEncryptDns01Challenge(host, email string) {
 	client, certificateKey := generateKeysAndClient(email)
 	ctx, order := createOrder(host, client)
 	baseChallenge, wildcardChallenge, baseAuthzURL, wildcardAuthzURL := fetchChallenges(ctx, client, order)
@@ -32,7 +32,7 @@ func createCertificateViaLetsEncryptDns01Challenge(host, email string) ([]byte, 
 	acceptChallenges(ctx, client, baseChallenge, wildcardChallenge)
 	waitForValidation(ctx, client, baseAuthzURL, wildcardAuthzURL)
 	csr := generateAndValidateCSR(host, certificateKey)
-	return finalizeAndSaveCertificate(ctx, client, order, csr, certificateKey)
+	finalizeAndSaveCertificate(ctx, client, order, csr, certificateKey)
 }
 
 func generateKeysAndClient(email string) (*acme.Client, *rsa.PrivateKey) {
@@ -157,7 +157,7 @@ func generateAndValidateCSR(host string, certificateKey *rsa.PrivateKey) []byte 
 	return data
 }
 
-func finalizeAndSaveCertificate(ctx context.Context, client *acme.Client, order *acme.Order, csr []byte, certificateKey *rsa.PrivateKey) ([]byte, []byte) {
+func finalizeAndSaveCertificate(ctx context.Context, client *acme.Client, order *acme.Order, csr []byte, certificateKey *rsa.PrivateKey) {
 	var cert [][]byte
 	for {
 		var err error
@@ -169,10 +169,11 @@ func finalizeAndSaveCertificate(ctx context.Context, client *acme.Client, order 
 		}
 		break
 	}
-	keyPem := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(certificateKey)})
-	certPem := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: cert[0]})
-	os.MkdirAll("./data", 0700)
-	os.WriteFile("./data/cert.pem", certPem, 0600)
-	os.WriteFile("./data/key.pem", keyPem, 0600)
-	return certPem, keyPem
+
+	var certPem []byte
+	for _, c := range cert {
+		certPem = append(certPem, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: c})...)
+	}
+	combinedPem := append(certPem, pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(certificateKey)})...)
+	os.WriteFile("./fullchain.pem", combinedPem, 0600)
 }
