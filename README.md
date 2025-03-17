@@ -4,7 +4,6 @@ A CLI tool for generating wildcard certificates via Let’s Encrypt using the DN
 
 ### Requirements
 
-* Go SDK installed
 * A domain with permission to create DNS records
 
 ### Usage
@@ -12,7 +11,6 @@ A CLI tool for generating wildcard certificates via Let’s Encrypt using the DN
 ```bash
 export HOST=sample.com
 export EMAIL=user@sample.com
-go build
 ./wildcert
 ```
 
