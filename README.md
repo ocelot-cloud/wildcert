@@ -16,6 +16,10 @@ export EMAIL=user@sample.com
 
 The Email address is used for Let's Encrypt notifications. A certificate for the domains `*.sample.com` and `sample.com` will be generated and saved in the `certs` directory. The certificate will be valid for 90 days.
 
+### Contributing
+
+Please read the [Community](https://ocelot-cloud.org/docs/community/) articles for more information on how to contribute to the project and interact with others.
+
 ### License
 
-This project is licensed under the 0BSD Open Source License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the 0BSD License - see the [LICENSE](LICENSE) file for details.
